@@ -56,26 +56,37 @@ void w2x_cb(vmi_instance_t vmi, vmi_event_t *event, vmi_pid_t pid, page_cat_t pa
 {
     size_t dump_size;
 
-    mem_seg_t vma = vmi_current_find_segment(vmi, event, event->mem_event.gla);
-    if (!vma.size)
-    {
-        fprintf(stderr, "WARNING: Unpack - Could not find memory segment for virtual address 0x%lx\n", event->mem_event.gla);
-        return;
+    GSList* list = vmi_current_vad_list(vmi, event, event->mem_event.gla);
+    int    nIndex;
+    GSList *node;
+    
+    for (nIndex = 0; (node = g_slist_nth (list, nIndex)); nIndex++) {
+        mem_seg_t *d;
+        d = node->data;
+        if (!(*d).size)
+        {
+            fprintf(stderr, "WARNING: Unpack - Could not find memory segment for virtual address 0x%lx\n", event->mem_event.gla);
+            return;
+        }
+        printf("base_va: 0x%lx\n",(*d).base_va);
+        printf("size: 0x%lx\n",(*d).size);
+        char *buffer = (char *) malloc((*d).size);
+        
+        if (!buffer)
+        {
+            fprintf(stderr, "ERROR: Unpack - Failed to malloc buffer to dump W2X event\n");
+            return;
+        }
+        
+        vmi_read_va(vmi, (*d).base_va, pid, (*d).size, buffer, &dump_size);
+    
+        if (base_image)
+            output_fix_header(buffer, dump_size, event->x86_regs->rip);
+    
+        add_to_dump_queue(buffer, dump_size, pid, event->x86_regs->rip, (*d).base_va);   
     }
-
-    char *buffer = (char *) malloc(vma.size);
-    if (!buffer)
-    {
-        fprintf(stderr, "ERROR: Unpack - Failed to malloc buffer to dump W2X event\n");
-        return;
-    }
-
-    vmi_read_va(vmi, vma.base_va, pid, vma.size, buffer, &dump_size);
-
-    if (base_image)
-        output_fix_header(buffer, dump_size, event->x86_regs->rip);
-
-    add_to_dump_queue(buffer, dump_size, pid, event->x86_regs->rip, vma.base_va);
+    g_slist_free(list);
+    g_slist_free(node);
 }
 
 void usage(char *name)
