@@ -99,6 +99,11 @@ vmi_pid_t (*vmi_current_parent_pid)(vmi_instance_t vmi, vmi_event_t *event);
  */
 mem_seg_t (*vmi_current_find_segment)(vmi_instance_t vmi, vmi_event_t *event, addr_t addr);
 
+/**
+ * TODO - Comment
+ */
+GSList * (*vmi_current_vad_list)(vmi_instance_t vmi, vmi_event_t *event, addr_t addr);
+
 /* LINUX */
 
 linux_rekall_t process_vmi_linux_rekall;
@@ -106,6 +111,7 @@ vmi_pid_t vmi_current_pid_linux(vmi_instance_t vmi, vmi_event_t *event);
 char *vmi_current_name_linux(vmi_instance_t vmi, vmi_event_t *event);
 vmi_pid_t vmi_current_parent_pid_linux(vmi_instance_t vmi, vmi_event_t *event);
 mem_seg_t vmi_current_find_segment_linux(vmi_instance_t vmi, vmi_event_t *event, addr_t addr);
+GSList *vmi_current_vad_list_linux(vmi_instance_t vmi, vmi_event_t *event, addr_t addr);
 
 /* WINDOWS */
 
@@ -114,5 +120,6 @@ vmi_pid_t vmi_current_pid_windows(vmi_instance_t vmi, vmi_event_t *event);
 char *vmi_current_name_windows(vmi_instance_t vmi, vmi_event_t *event);
 vmi_pid_t vmi_current_parent_pid_windows(vmi_instance_t vmi, vmi_event_t *event);
 mem_seg_t vmi_current_find_segment_windows(vmi_instance_t vmi, vmi_event_t *event, addr_t addr);
+GSList *vmi_current_vad_list_windows(vmi_instance_t vmi, vmi_event_t *event, addr_t addr);
 
 #endif
