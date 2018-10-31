@@ -242,3 +242,8 @@ mem_seg_t vmi_current_find_segment_linux(vmi_instance_t vmi, vmi_event_t *event,
 
     return mem_seg; // no match found
 }
+
+GSList* vmi_current_vad_list_linux(vmi_instance_t vmi, vmi_event_t *event, addr_t addr)
+{
+  return NULL;
+}
